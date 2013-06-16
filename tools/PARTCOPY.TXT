@@ -1,0 +1,102 @@
+PARTCOPY.EXE version 2.0 by John S. Fine <johnfine@erols.com>
+
+   This program copies contiguous ranges of raw data between files and/or
+disks.
+
+   Use this program entirely at your own risk.  I make no claim that
+this program is suitable or safe for any purpose.
+
+ZER0-PRICE SHAREWARE:
+
+   If you continue to use this program after a reasonable initial test,
+you must register it.  You do not need to send any money.  Registration
+consists entirely of sending an EMAIL to johnfine@erols.com to tell me
+that you are using it, and where you got your copy.  Bug reports and
+suggestions are also welcome, though I can't promise to do anything
+with them.
+
+PURPOSE of PARTCOPY:
+
+   The name "PARTCOPY" stands for "Partial Copy".  I wrote the first version of
+this program LONG ago when I needed to extract an OBJ module from a LIB file
+and the librarian program wasn't completely compatible with the file's format.
+It could tell me where in the .LIB the module I wanted was located, but it
+crashed when it tried to extract it.  I thought I really ought to have a
+simple utility for copying a chunk out of any file to any other file, so I
+wrote it.
+
+   Over the years, I ocassionally needed to copy raw data in some other way
+that wasn't handled by standard utilities.  I added each of those to PARTCOPY
+as I needed them.  (MOST of them are documented for this release).
+
+   Now I use it while repairing corrupted partitions (or salvaging data from
+really corrupted partitions), writing my own multi-boot code out to master
+boot records and fixing PCMCIA SRAM cards that won't format properly.
+
+WARNING:
+
+   Please use PARTCOPY very carefully.  If you tell it to write something to
+a specified location on your hard drive, that is what it will do.  It doesn't
+care whether the thing you told it to write belongs there or whether it will
+trash all your partitions and make all your data inaccessable.
+
+   Before you do anything else with PARTCOPY, you really should use it to
+back up the first few tracks of your hard drive onto a floppy.  Then, if you
+destroy those tracks with PARTCOPY (or some other way), you can get them
+back.
+
+1)  Make a bootable diskette.
+
+2)  Put onto that diskette whatever you consider to be the key utilities to
+have when your hard drive is sick.  I would include SYS.COM as a minimum.  For
+my own use, I always include FDISK and a good disk editor as well.
+
+3)  Put PARTCOPY.EXE and this documentation onto the diskette as well.
+
+4)  While booted on the diskette, use PARTCOPY to backup the beginning of the
+hard drive onto a file on the floppy.  If you have room, backing up a half
+megabyte is a good idea.  Use a command like:
+
+   partcopy -h0 0 80000 A:disk_0.bak
+
+5)  Put it away in a safe place.
+
+Note, if you need to restore from that backup, reread all these instructions
+first.  Try to understand what went wrong as much as possible before you try
+to fix it.  Unless the backup was very recent, don't restore the full half
+megabyte that you backed up.  In almost all cases, that is too much and
+would corrupt your directory structure if you have added or removed files
+since the backup.  Try to figure out what was clobbered and just restore
+that.  For example if you just clobbered the first sector, restore it with:
+
+   partcopy A:disk_0.bak 0 200 -h0
+
+USAGE:
+
+PARTCOPY source source_offset length destination {destination_offset}
+
+   Only destination_offset is optional.  The other parameters are always
+required.  The offsets and length are always in HEX.
+
+   If the destination is a file and the destination_offset is omitted then
+the file is deleted if it exists and a new file is created.  For non-file
+destinations, an omitted destination_offset simply defaults to zero.
+
+   The following rules are used to specify the source and destination:
+
+   Any name which does not begin with a "-" is a filename and will be accessed
+using MS-DOS int 21 services.
+
+   -aL Access drive letter L using int 25 and int 26 (Absolute Disk) services.
+Only the "new" form (cx=0xFFFF) is used.
+
+   -hN Accesses hard drive N using int 13 services.
+
+   -fN Accesses floppy drive N using int 13 services.
+
+   -iN or -iAAA:N Directly accesses IDE hard drive N on the interface at
+address AAA (default = 1F0).  This access uses polling with interrupts
+disabled, so secondary (and beyond) controllers can be handled without
+worrying which IRQ they connect to.  In this version, the direct IDE
+access is read only.
+
