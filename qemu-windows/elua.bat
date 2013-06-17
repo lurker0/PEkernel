@@ -1,0 +1,1 @@
+qemu -L bios -kernel elua0.8_lua_i386.elf -gdb tcp::1234
